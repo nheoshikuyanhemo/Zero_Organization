@@ -242,14 +242,6 @@ export function Landing({ loginWithX, onDocs }: Props) {
       <GlitchFlash />
       <CornerTicks />
 
-      {/* Boot animation keyframe */}
-      <style>{`
-        @keyframes bootLine {
-          from { opacity: 0; transform: translateY(3px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
       {/* ── MOBILE (< 640px) ─────────────────────────────────── */}
       <div className="sm:hidden relative z-10 flex flex-col gap-5 px-4 py-8 max-w-lg mx-auto">
         <ZorgLogo size="lg" />
