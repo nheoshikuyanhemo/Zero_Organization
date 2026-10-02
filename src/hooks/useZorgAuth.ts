@@ -1,10 +1,11 @@
-// ─── ZORG Auth Hook ───────────────────────────────────────────────────────────
-// When VITE_PRIVY_APP_ID is valid: uses real Privy X OAuth + embedded wallet.
-// When not set (demo mode): mock login so the full UI renders without Privy.
+// ─── ZORG Auth ────────────────────────────────────────────────────────────────
+// Demo mode until a real Privy App ID is provided.
+// To enable real X (Twitter) login:
+//   1. Get a Privy App ID from https://privy.io
+//   2. Add VITE_PRIVY_APP_ID=clYOUR_ID to .env
+//   3. Uncomment the Privy integration below
 
-import { useCallback, useMemo, useState } from 'react'
-// Privy hooks — only called when PrivyProvider is mounted in the tree
-import { usePrivy, useWallets } from '@privy-io/react-auth'
+import { useCallback, useState } from 'react'
 import type { UserProfile } from '../types/zorg'
 
 export interface ZorgAuthState {
@@ -17,84 +18,49 @@ export interface ZorgAuthState {
   isLoggingIn: boolean
 }
 
-// Module-level constant — checked once on load, never changes at runtime.
-const RAW_ID = import.meta.env.VITE_PRIVY_APP_ID as string | undefined
-export const HAS_PRIVY = !!(RAW_ID && RAW_ID.startsWith('cl') && RAW_ID.length > 10)
-
-const BOOT_TIME = Date.now()
-
-// ── Hook used when PrivyProvider IS in the tree ───────────────────────────────
-function useZorgAuthReal(): ZorgAuthState {
-  const { ready, authenticated, user: privyUser, login, logout } = usePrivy()
-  const { wallets } = useWallets()
-  const [isLoggingIn, setIsLoggingIn] = useState(false)
-
-  const embeddedWallet = wallets.find((w) => w.walletClientType === 'privy')
-  const walletAddress  = (embeddedWallet ?? wallets[0])?.address ?? null
-
-  const xAccount = privyUser?.linkedAccounts?.find((a) => a.type === 'twitter_oauth')
-
-  const profile: UserProfile | null = useMemo(() => {
-    if (!authenticated || !privyUser || !walletAddress) return null
-    const xUsername = (xAccount as { username?: string } | undefined)?.username
-    const xName     = (xAccount as { name?: string } | undefined)?.name
-    const handle = xUsername
-      ? `@${xUsername}`
-      : xName ? `@${xName.toLowerCase().replace(/\s+/g, '_')}`
-              : `@${walletAddress.slice(2, 8)}`
-    return {
-      address: walletAddress, handle, accountType: 'human', bio: '',
-      avatarSeed: handle.slice(1),
-      totalEarned: 0, totalSpent: 0, totalRefunded: 0,
-      campaignsCreated: 0, tasksCompleted: 0, joinedAt: BOOT_TIME,
-    }
-  }, [authenticated, privyUser, walletAddress, xAccount])
-
-  const loginWithX = useCallback(() => {
-    if (!ready || isLoggingIn) return
-    setIsLoggingIn(true)
-    login()
-    setTimeout(() => setIsLoggingIn(false), 5000)
-  }, [ready, isLoggingIn, login])
-
-  return {
-    ready, authenticated, user: profile, walletAddress,
-    loginWithX,
-    logout: useCallback(() => { void logout() }, [logout]),
-    isLoggingIn: !ready || isLoggingIn,
-  }
-}
-
-// ── Hook used when PrivyProvider is NOT in the tree (demo mode) ───────────────
-function useZorgAuthMock(): ZorgAuthState {
+export function useZorgAuth(): ZorgAuthState {
   const [authenticated, setAuthenticated] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   const loginWithX = useCallback(() => {
-    const addr = '0xDEMO' + Math.random().toString(16).slice(2, 10).toUpperCase()
-    setUser({
-      address: addr, handle: '@zorg_demo', accountType: 'human',
-      bio: 'demo — add VITE_PRIVY_APP_ID for real X login',
-      avatarSeed: 'zorg_demo',
-      totalEarned: 0, totalSpent: 0, totalRefunded: 0,
-      campaignsCreated: 0, tasksCompleted: 0, joinedAt: Date.now(),
-    })
-    setAuthenticated(true)
-  }, [])
+    if (isLoggingIn) return
+    setIsLoggingIn(true)
+    // Simulate network delay for realism
+    setTimeout(() => {
+      const addr = '0x' + Array.from({ length: 40 }, () =>
+        Math.floor(Math.random() * 16).toString(16)
+      ).join('')
+      setUser({
+        address: addr,
+        handle: '@zorg_user',
+        accountType: 'human',
+        bio: 'zero organization. zero knowledge. total freedom.',
+        avatarSeed: 'zorg_user',
+        totalEarned: 0,
+        totalSpent: 0,
+        totalRefunded: 0,
+        campaignsCreated: 0,
+        tasksCompleted: 0,
+        joinedAt: Date.now(),
+      })
+      setAuthenticated(true)
+      setIsLoggingIn(false)
+    }, 800)
+  }, [isLoggingIn])
 
   const logout = useCallback(() => {
-    setUser(null)
     setAuthenticated(false)
+    setUser(null)
   }, [])
 
-  return { ready: true, authenticated, user, walletAddress: user?.address ?? null, loginWithX, logout, isLoggingIn: false }
-}
-
-// ── Exported hook — HAS_PRIVY is a compile-time constant, never changes ───────
-// Calling different hook implementations based on a *module-level constant*
-// (not a runtime variable) is safe: the branch is fixed for the entire page
-// lifetime, satisfying the Rules of Hooks stability requirement.
-export function useZorgAuth(): ZorgAuthState {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  return HAS_PRIVY ? useZorgAuthReal() : useZorgAuthMock()
+  return {
+    ready: true,
+    authenticated,
+    user,
+    walletAddress: user?.address ?? null,
+    loginWithX,
+    logout,
+    isLoggingIn,
+  }
 }
