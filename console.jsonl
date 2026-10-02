@@ -251,3 +251,25 @@
 {"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956535662}
 {"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956602851}
 {"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956871815}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956966022}
+{"level":"error","message":"[vite] failed to connect to websocket (Error: WebSocket closed without opened.). ","timestamp":1790956966367}
+{"level":"error","message":"Unhandled promise rejection: Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)","timestamp":1790956966425,"stack":"Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)"}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956967563}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956968478}
+{"level":"error","message":"[vite] failed to connect to websocket (Error: WebSocket closed without opened.). ","timestamp":1790956968822}
+{"level":"error","message":"[vite] failed to connect to websocket (Error: WebSocket closed without opened.). ","timestamp":1790956968827}
+{"level":"error","message":"Unhandled promise rejection: Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)","timestamp":1790956968901,"stack":"Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)"}
+{"level":"error","message":"Unhandled promise rejection: Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)","timestamp":1790956968902,"stack":"Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)"}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956980824}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790956994045}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790957021295}
+{"level":"error","message":"[vite] failed to connect to websocket (Error: WebSocket closed without opened.). ","timestamp":1790957021600}
+{"level":"error","message":"Unhandled promise rejection: Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)","timestamp":1790957021646,"stack":"Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)"}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790957026582}
+{"level":"error","message":"[vite] failed to connect to websocket (Error: WebSocket closed without opened.). ","timestamp":1790957026850}
+{"level":"error","message":"Unhandled promise rejection: Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)","timestamp":1790957026893,"stack":"Error: WebSocket closed without opened.\n    at WebSocket.<anonymous> (https://isewre6a4d4dcmsolrkit.preview.studio.arc.io/@vite/client:454:22)"}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790957118993}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790957150326}
+{"level":"error","message":"[vite] failed to connect to websocket.\nyour current setup:\n  (browser) isewre6a4d4dcmsolrkit.preview.studio.arc.io/ <--[HTTP]--> localhost:5173/ (server)\n  (browser) isewre6a4d4dcmsolrkit.preview.studio.arc.io:/ <--[WebSocket (failing)]--> localhost:5173/ (server)\nCheck out your Vite / network configuration and https://vite.dev/config/server-options.html#server-hmr .","timestamp":1790957150787}
+{"level":"info","message":"[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.","timestamp":1790957193302}
+{"level":"error","message":"[vite] failed to connect to websocket.\nyour current setup:\n  (browser) isewre6a4d4dcmsolrkit.preview.studio.arc.io/ <--[HTTP]--> localhost:5173/ (server)\n  (browser) isewre6a4d4dcmsolrkit.preview.studio.arc.io:/ <--[WebSocket (failing)]--> localhost:5173/ (server)\nCheck out your Vite / network configuration and https://vite.dev/config/server-options.html#server-hmr .","timestamp":1790957193666}

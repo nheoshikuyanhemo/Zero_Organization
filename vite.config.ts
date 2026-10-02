@@ -37,10 +37,6 @@ export default defineConfig({
   server: {
     allowedHosts: true,
     cors: true,
-    hmr: {
-      host: 'isewre6a4d4dcmsolrkit.preview.studio.arc.io',
-      clientPort: 443,
-      protocol: 'wss',
-    },
+    hmr: false,
   },
 })
