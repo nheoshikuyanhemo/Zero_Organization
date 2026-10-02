@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { UserProfile } from '../types/zorg'
 import { ZorgLogo } from './ZorgLogo'
 
 interface Props {
-  onEnter: (user: UserProfile) => void
+  loginWithX: () => void
   onDocs: () => void
 }
 
@@ -250,11 +249,11 @@ function WaitlistBox({ val, setVal, done, setDone, compact = false }: {
   )
 }
 
-function CTAButtons({ mockLogin, onDocs, large = false }: { mockLogin: () => void; onDocs: () => void; large?: boolean }) {
+function CTAButtons({ loginWithX, onDocs, large = false }: { loginWithX: () => void; onDocs: () => void; large?: boolean }) {
   return (
     <div className="space-y-3">
       <button
-        onClick={mockLogin}
+        onClick={loginWithX}
         className="btn-zorg btn-zorg-solid w-full tracking-widest"
         style={{ minHeight: large ? 52 : 48, fontSize: large ? '0.9rem' : '0.8rem' }}
       >
@@ -262,33 +261,19 @@ function CTAButtons({ mockLogin, onDocs, large = false }: { mockLogin: () => voi
       </button>
       <div className="grid grid-cols-2 gap-2">
         <button onClick={onDocs} className="btn-zorg py-2.5 text-xs" style={{ minHeight: 44 }}>[ manifesto ]</button>
-        <button onClick={() => window.open('https://github.com', '_blank')} className="btn-zorg py-2.5 text-xs" style={{ minHeight: 44 }}>[ source ]</button>
+        <button onClick={() => window.open('https://github.com/nheoshikuyanhemo/Zero_Organization', '_blank')} className="btn-zorg py-2.5 text-xs" style={{ minHeight: 44 }}>[ source ]</button>
       </div>
     </div>
   )
 }
 
 // ── Main Landing ──────────────────────────────────────────────────────────────
-export default function Landing({ onEnter, onDocs }: Props) {
+export default function Landing({ loginWithX, onDocs }: Props) {
   const [ready, setReady]     = useState(false)
   const [waitlistVal, setWV]  = useState('')
   const [waitlistDone, setWD] = useState(false)
 
   const handleReady = useCallback(() => setReady(true), [])
-
-  const mockLogin = useCallback(() => {
-    const r = () => Math.random().toString(36).slice(2, 7)
-    const user: UserProfile = {
-      address: '0x' + Math.random().toString(16).slice(2, 10) + 'f00d',
-      handle: '@anon_' + r(),
-      accountType: 'human',
-      bio: '', avatarSeed: r(),
-      totalEarned: 0, totalSpent: 0, totalRefunded: 0,
-      campaignsCreated: 0, tasksCompleted: 0,
-      joinedAt: Date.now(),
-    }
-    onEnter(user)
-  }, [onEnter])
 
   // Shared content blocks
   const sharedBottom = ready ? (
@@ -324,7 +309,7 @@ export default function Landing({ onEnter, onDocs }: Props) {
               <p className="text-[0.73rem] text-[rgba(232,255,232,0.45)] leading-relaxed font-mono">
                 post tweet links with a $ZORG pool. others engage and earn. auto-distributed. no admins.
               </p>
-              <CTAButtons mockLogin={mockLogin} onDocs={onDocs} />
+              <CTAButtons loginWithX={loginWithX} onDocs={onDocs} />
               <WaitlistBox val={waitlistVal} setVal={setWV} done={waitlistDone} setDone={setWD} />
               {sharedBottom}
             </motion.div>
@@ -350,7 +335,7 @@ export default function Landing({ onEnter, onDocs }: Props) {
                 <p className="text-[0.72rem] text-[rgba(232,255,232,0.45)] leading-relaxed font-mono">
                   post tweet links with a $ZORG pool.<br />others engage and earn.<br />auto-distributed. no middlemen.
                 </p>
-                <CTAButtons mockLogin={mockLogin} onDocs={onDocs} />
+                <CTAButtons loginWithX={loginWithX} onDocs={onDocs} />
                 <WaitlistBox val={waitlistVal} setVal={setWV} done={waitlistDone} setDone={setWD} compact />
               </motion.div>
             )}
@@ -390,7 +375,7 @@ export default function Landing({ onEnter, onDocs }: Props) {
                     others engage and earn — like, repost, comment.<br />
                     auto-distributed at expiry. no middlemen.
                   </p>
-                  <CTAButtons mockLogin={mockLogin} onDocs={onDocs} large />
+                  <CTAButtons loginWithX={loginWithX} onDocs={onDocs} large />
                   <div className="ascii-divider" />
                   <WaitlistBox val={waitlistVal} setVal={setWV} done={waitlistDone} setDone={setWD} />
                   <StatsStrip />
