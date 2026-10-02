@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ZORG">
+  <rect x="1" y="1" width="62" height="62" rx="8" fill="#0a0a0a" stroke="#00ff41" stroke-width="1.5"/>
+  <text x="32" y="40"
+        text-anchor="middle"
+        font-family="'JetBrains Mono',monospace"
+        font-size="26"
+        font-weight="700"
+        letter-spacing="1"
+        fill="#00ff41">Z</text>
+  <circle cx="32" cy="54" r="2.5" fill="#00d9ff"/>
+</svg>
