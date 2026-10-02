@@ -24,16 +24,32 @@ import './index.css'
 
 const queryClient = new QueryClient()
 
-const PRIVY_APP_ID = import.meta.env.VITE_PRIVY_APP_ID as string
+// Validate Privy App ID — Privy IDs start with "cl" and are >10 chars.
+// The placeholder "your-privy-app-id-here" and "clx000..." both fail this check.
+const RAW_ID = import.meta.env.VITE_PRIVY_APP_ID as string | undefined
+const PRIVY_APP_ID = RAW_ID && RAW_ID.startsWith('cl') && RAW_ID.length > 10
+  ? RAW_ID
+  : null
 
-if (!PRIVY_APP_ID || PRIVY_APP_ID === 'your-privy-app-id-here') {
-  console.warn('[ZORG] VITE_PRIVY_APP_ID not set — X login will use mock mode. Set it in .env to enable real Privy auth.')
+if (!PRIVY_APP_ID) {
+  console.info('[ZORG] No valid VITE_PRIVY_APP_ID — running in demo mode.')
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+const inner = (
+  <WagmiProvider config={config}>
+    <QueryClientProvider client={queryClient}>
+      <App />
+      <Toaster position="top-center" />
+    </QueryClientProvider>
+  </WagmiProvider>
+)
+
+// Only mount PrivyProvider when we have a real validated App ID.
+// Mounting it with an invalid ID throws synchronously and crashes the whole tree.
+const root = PRIVY_APP_ID
+  ? (
     <PrivyProvider
-      appId={PRIVY_APP_ID || 'clx0000000000000000000000'}
+      appId={PRIVY_APP_ID}
       config={{
         loginMethods: ['twitter'],
         appearance: {
@@ -46,12 +62,11 @@ createRoot(document.getElementById('root')!).render(
         },
       }}
     >
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <App />
-          <Toaster position="top-center" />
-        </QueryClientProvider>
-      </WagmiProvider>
+      {inner}
     </PrivyProvider>
-  </StrictMode>,
+  )
+  : inner
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>{root}</StrictMode>,
 )
