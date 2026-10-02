@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ZorgLogo } from './ZorgLogo'
 
@@ -39,31 +39,45 @@ const FEED_ITEMS = [
 ]
 
 // ── Boot terminal — ONE instance only, never duplicated ───────────────────────
+// Reducer keeps lines strictly append-only and ignores duplicate indices
+// — immune to StrictMode double-invocation and concurrent renders
+type TermLine = { text: string; color: 'dim' | 'green' | 'bright' }
+type TermState = { lines: TermLine[]; count: number; done: boolean }
+type TermAction = { type: 'ADD'; line: TermLine } | { type: 'DONE' }
+function termReducer(state: TermState, action: TermAction): TermState {
+  if (action.type === 'DONE') return { ...state, done: true }
+  // Only append if this line isn't already present (StrictMode guard)
+  if (state.count >= BOOT_LINES.length) return state
+  return { lines: [...state.lines, action.line], count: state.count + 1, done: false }
+}
+
 function BootTerminal({ onReady }: { onReady: () => void }) {
-  const [lines, setLines] = useState<{ text: string; color: 'dim' | 'green' | 'bright' }[]>([])
-  const [done, setDone]   = useState(false)
-  const idxRef     = useRef(0)
+  const [state, dispatch] = useReducer(termReducer, { lines: [], count: 0, done: false })
   const onReadyRef = useRef(onReady)
+  // Keep ref current after every render (layout effect = before paint, safe for refs)
+  useLayoutEffect(() => { onReadyRef.current = onReady })
 
   useEffect(() => {
-    // Keep the callback ref fresh inside the effect without triggering re-runs
-    onReadyRef.current = onReady
-  })
-
-  useEffect(() => {
+    let cancelled = false
+    let i = 0
     const tick = setInterval(() => {
-      const idx = idxRef.current
-      if (idx < BOOT_LINES.length) {
-        const line = BOOT_LINES[idx]
-        if (line !== undefined) setLines((p) => [...p, line])
-        idxRef.current = idx + 1
+      if (cancelled) return
+      if (i < BOOT_LINES.length) {
+        const line = BOOT_LINES[i]
+        if (line) dispatch({ type: 'ADD', line })
+        i++
       } else {
         clearInterval(tick)
-        setTimeout(() => { setDone(true); onReadyRef.current() }, 300)
+        setTimeout(() => {
+          if (!cancelled) {
+            dispatch({ type: 'DONE' })
+            onReadyRef.current()
+          }
+        }, 300)
       }
     }, 220)
-    return () => clearInterval(tick)
-  }, []) // intentionally empty — runs once per mount
+    return () => { cancelled = true; clearInterval(tick) }
+  }, []) // runs once per mount
 
   return (
     <div className="w-full zorg-surface p-4" style={{ fontFamily: "'JetBrains Mono','IBM Plex Mono',monospace" }}>
@@ -76,7 +90,7 @@ function BootTerminal({ onReady }: { onReady: () => void }) {
         </span>
       </div>
       <div className="space-y-1.5 min-h-[9rem]">
-        {lines.map((line, idx) => (
+        {state.lines.map((line, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, x: -5 }}
@@ -92,7 +106,7 @@ function BootTerminal({ onReady }: { onReady: () => void }) {
             {line.text}
           </motion.div>
         ))}
-        {!done && <span className="inline-block text-[0.78rem] text-[#00ff41] cursor-blink" aria-hidden="true" />}
+        {!state.done && <span className="inline-block text-[0.78rem] text-[#00ff41] cursor-blink" aria-hidden="true" />}
       </div>
     </div>
   )
