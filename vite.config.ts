@@ -5,6 +5,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
   plugins: [react(), nodePolyfills()],
+  cacheDir: 'node_modules/.vite-zorg',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -38,5 +39,6 @@ export default defineConfig({
     allowedHosts: true,
     cors: true,
     hmr: false,
+    watch: { usePolling: false },
   },
 })
