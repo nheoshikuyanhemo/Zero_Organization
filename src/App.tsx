@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { AppState, Campaign, AgentManifest } from './types/zorg'
 import { useZorgAuth } from './hooks/useZorgAuth'
+import { HackerBackground } from './components/HackerBackground'
 import Landing from './components/Landing'
 import Feed from './components/Feed'
 import Compose from './components/Compose'
@@ -118,6 +119,9 @@ export default function App() {
 
   return (
     <>
+      {/* Global hacker background — matrix rain, data streams, glitch flash, hex ticker */}
+      <HackerBackground />
+
       <AnimatePresence mode="wait">
         {(view === 'landing' || !authenticated) && (
           <Page key="landing">

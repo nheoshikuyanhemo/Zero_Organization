@@ -38,39 +38,6 @@ const FEED_ITEMS = [
   { addr: '0xaaaa...1234', action: 'claimed comment',  detail: '+25 ZORG earned' },
 ]
 
-// ── Matrix rain ───────────────────────────────────────────────────────────────
-function MatrixRain() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
-    resize()
-    window.addEventListener('resize', resize)
-    const chars = '01ZORG#$%アイウゼロ╔╗╚╝═║'
-    const cols  = Math.floor(canvas.width / 16)
-    const drops = Array.from({ length: cols }, () => Math.random() * -60)
-    const tick  = setInterval(() => {
-      ctx.fillStyle = 'rgba(10,10,10,0.055)'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.font = '13px JetBrains Mono, monospace'
-      drops.forEach((y, i) => {
-        const char = chars[Math.floor(Math.random() * chars.length)]
-        ctx.globalAlpha = Math.random() * 0.38 + 0.06
-        ctx.fillStyle = i % 9 === 0 ? '#00d9ff' : '#00ff41'
-        ctx.fillText(char, i * 16, y * 16)
-        ctx.globalAlpha = 1
-        if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0
-        else drops[i]++
-      })
-    }, 55)
-    return () => { clearInterval(tick); window.removeEventListener('resize', resize) }
-  }, [])
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.17 }} aria-hidden="true" />
-}
-
 // ── Boot terminal — ONE instance only, never duplicated ───────────────────────
 function BootTerminal({ onReady }: { onReady: () => void }) {
   const [lines, setLines] = useState<{ text: string; color: 'dim' | 'green' | 'bright' }[]>([])
@@ -286,8 +253,8 @@ export default function Landing({ loginWithX, onDocs }: Props) {
   ) : null
 
   return (
-    <div className="min-h-dvh relative bg-[#0a0a0a] scanlines overflow-x-hidden">
-      <MatrixRain />
+    <div className="min-h-dvh relative bg-[#0a0a0a] overflow-x-hidden">
+      {/* HackerBackground (matrix rain, data streams, glitch) is mounted globally in App.tsx */}
 
       {/* ─── SINGLE BootTerminal renders here — hidden, drives the ready state ─── */}
       {/* It is invisible (opacity-0 h-0 overflow-hidden) on tablet/desktop       */}
