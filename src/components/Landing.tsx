@@ -115,7 +115,7 @@ export function Landing({ loginWithX }: Props) {
     <div className="min-h-dvh bg-[#0a0a0a] text-[#00ff41] font-mono overflow-x-hidden">
 
       {/* ── MOBILE layout (< sm) ── */}
-      <div className="sm:hidden flex flex-col gap-6 px-4 py-8">
+      <div className="flex sm:hidden flex-col gap-6 px-4 py-8">
         <ZorgLogo size="lg" />
 
         {/* Boot lines — pure CSS staggered animation, no intervals */}
@@ -155,7 +155,7 @@ export function Landing({ loginWithX }: Props) {
       </div>
 
       {/* ── TABLET layout (sm – lg) ── */}
-      <div className="hidden sm:flex lg:hidden flex-col gap-6 px-6 py-10">
+      <div className="sm:flex lg:hidden flex-col gap-6 px-6 py-10 hidden">
         <ZorgLogo size="lg" />
 
         <div className="grid grid-cols-2 gap-6">

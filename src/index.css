@@ -38,6 +38,16 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Root must be a stacking context so page content sits ABOVE the
+   fixed HackerBackground layers (z-1 to z-4) but BELOW the
+   scanline/noise pseudo-elements (z-9997/9998) */
+#root {
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+  min-height: 100dvh;
+}
+
 /* ─── Scrollbar ─────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -389,6 +399,21 @@ html, body {
   font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
   padding: 0.15rem 0.5rem; border: 1px solid currentColor; border-radius: 2px;
   display: inline-flex; align-items: center;
+}
+
+/* ─── ZORG Logo glitch ──────────────────────────── */
+@keyframes zorg-logo-glitch {
+  0%,86%,100% { transform:none; filter:drop-shadow(0 0 6px rgba(0,255,65,0.35)); opacity:1; }
+  87% { transform:translateX(-3px) skewX(-1deg); filter:drop-shadow(-3px 0 rgba(0,217,255,0.7)) drop-shadow(3px 0 rgba(255,0,60,0.5)); }
+  88% { transform:translateX(3px) skewX(1deg);  filter:drop-shadow(3px 0 rgba(0,217,255,0.7)) drop-shadow(-2px 0 rgba(255,0,60,0.5)); opacity:0.88; }
+  89% { transform:translateX(-1px); filter:drop-shadow(0 0 8px rgba(0,255,65,0.5)); }
+  90% { transform:none; filter:drop-shadow(0 0 6px rgba(0,255,65,0.35)); opacity:1; }
+  93% { transform:translateX(2px) scaleX(1.01); filter:drop-shadow(2px 0 rgba(0,217,255,0.5)); }
+  94% { transform:none; }
+}
+@keyframes zorg-logo-flicker {
+  0%,19%,21%,23%,25%,54%,56%,100% { opacity:1; }
+  20%,22%,24%,55% { opacity:0.6; }
 }
 
 /* ─── Pulse ─────────────────────────────────────── */

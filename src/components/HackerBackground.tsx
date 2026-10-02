@@ -84,7 +84,7 @@ function MatrixRain() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 1, opacity: 0.15 }}
+      style={{ zIndex: 0, opacity: 0.15 }}
       aria-hidden="true"
     />
   )
@@ -109,7 +109,7 @@ function DataStreams() {
   ), [])
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 2 }} aria-hidden="true">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }} aria-hidden="true">
       {streams.map((s) => (
         <div
           key={s.id}
@@ -140,7 +140,7 @@ const HEX_STRIP = Array.from(
 
 function HexTicker() {
   return (
-    <div className="fixed bottom-8 left-0 right-0 pointer-events-none hex-ticker" style={{ zIndex: 3 }} aria-hidden="true">
+    <div className="fixed bottom-8 left-0 right-0 pointer-events-none hex-ticker" style={{ zIndex: 0 }} aria-hidden="true">
       <div className="hex-ticker-inner select-none">
         {HEX_STRIP}&nbsp;&nbsp;&nbsp;{HEX_STRIP}
       </div>
@@ -151,7 +151,7 @@ function HexTicker() {
 // ── 4. Corner frame lines ─────────────────────────────────────
 function CornerLines() {
   return (
-    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 4 }} aria-hidden="true">
+    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }} aria-hidden="true">
       {/* Top-left */}
       <div className="absolute top-3 left-3 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(0,255,65,0.18)' }} />
       {/* Top-right */}
@@ -165,7 +165,6 @@ function CornerLines() {
         className="absolute inset-0"
         style={{
           background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)',
-          zIndex: 0,
         }}
       />
     </div>
