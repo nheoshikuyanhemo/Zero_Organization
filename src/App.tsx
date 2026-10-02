@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import type { AppState, Campaign, AgentManifest } from './types/zorg'
 import { useZorgAuth } from './hooks/useZorgAuth'
 import { HackerBackground } from './components/HackerBackground'
@@ -12,34 +11,18 @@ import Docs from './components/Docs'
 import AgentRegister from './components/AgentRegister'
 import { toast } from 'sonner'
 
-function Page({ children }: { children: React.ReactNode }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
-    >
-      {children}
-    </motion.div>
-  )
-}
-
 export default function App() {
-  const { authenticated, user, loginWithX, logout, ready, isLoggingIn: _isLoggingIn } = useZorgAuth()
+  const { authenticated, user, loginWithX, logout, ready } = useZorgAuth()
 
-  const [view, setView]                           = useState<AppState['view']>('landing')
-  const [activeCampaignId, setActiveCampaignId]   = useState<string | null>(null)
-  const [viewingProfile,   setViewingProfile]     = useState<string | null>(null)
+  const [view, setView]                         = useState<AppState['view']>('landing')
+  const [activeCampaignId, setActiveCampaignId] = useState<string | null>(null)
+  const [viewingProfile,   setViewingProfile]   = useState<string | null>(null)
 
-  // When Privy auth completes and user becomes available, auto-navigate to feed
-  // Using startTransition to avoid synchronous setState-in-effect lint errors
   useEffect(() => {
     if (authenticated && user && view === 'landing') {
-      const handle = user.handle
       setTimeout(() => {
         setView('feed')
-        toast.success(`welcome, ${handle}`, {
+        toast.success(`welcome, ${user.handle}`, {
           description: 'wallet ready · zero knowledge · zero org',
           style: {
             background: '#0f0f0f',
@@ -53,7 +36,6 @@ export default function App() {
     }
   }, [authenticated, user, view])
 
-  // When user logs out, go back to landing
   useEffect(() => {
     if (ready && !authenticated && view !== 'landing' && view !== 'docs') {
       setTimeout(() => setView('landing'), 0)
@@ -67,14 +49,8 @@ export default function App() {
     setActiveCampaignId(campaign.id)
     setView('campaign')
     toast.success('campaign deployed', {
-      description: `${campaign.poolTotal.toLocaleString()} ZORG in pool · ${campaign.tasks.length} task types`,
-      style: {
-        background: '#0f0f0f',
-        border: '1px solid rgba(0,255,65,0.35)',
-        color: '#e8ffe8',
-        fontFamily: 'JetBrains Mono, monospace',
-        fontSize: '0.75rem',
-      },
+      description: `${campaign.poolTotal.toLocaleString()} ZORG in pool`,
+      style: { background: '#0f0f0f', border: '1px solid rgba(0,255,65,0.35)', color: '#e8ffe8', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem' },
     })
   }, [])
 
@@ -85,118 +61,95 @@ export default function App() {
     })
   }, [])
 
-  const renderNavBar = () => {
-    if (!user || view === 'landing' || view === 'auth') return null
-    return (
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[rgba(0,255,65,0.1)] bg-[rgba(10,10,10,0.97)] backdrop-blur-sm">
-        <div className="max-w-2xl mx-auto flex items-center justify-around py-2 px-4">
-          {[
-            { label: 'feed',    icon: '◈', action: () => setView('feed') },
-            { label: 'compose', icon: '+', action: () => setView('compose') },
-            { label: 'docs',    icon: '//', action: () => setView('docs') },
-            { label: 'agent',   icon: '◇', action: () => setView('agent-register') },
-            { label: 'profile', icon: '@', action: () => { setViewingProfile(user.address); setView('profile') } },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={item.action}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-all ${
-                view === item.label || (item.label === 'feed' && view === 'campaign')
-                  ? 'text-[#00ff41]'
-                  : 'text-[rgba(232,255,232,0.3)] hover:text-[rgba(232,255,232,0.6)]'
-              }`}
-            >
-              <span className="text-sm leading-none" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-                {item.icon}
-              </span>
-              <span className="text-[0.45rem] uppercase tracking-widest">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  const showNav = !!user && view !== 'landing' && view !== 'auth'
 
   return (
-    <>
-      {/* Global hacker background — matrix rain, data streams, glitch flash, hex ticker */}
+    <div className="min-h-dvh bg-[#0a0a0a]">
       <HackerBackground />
 
-      <AnimatePresence mode="wait">
-        {(view === 'landing' || !authenticated) && (
-          <Page key="landing">
-            <Landing
-              loginWithX={loginWithX}
-              onDocs={() => setView('docs')}
-            />
-          </Page>
-        )}
+      {/* Views — simple conditional render, no AnimatePresence */}
+      {(view === 'landing' || !authenticated) && (
+        <Landing loginWithX={loginWithX} onDocs={() => setView('docs')} />
+      )}
 
-        {view === 'feed' && authenticated && user && (
-          <Page key="feed">
-            <div style={{ paddingBottom: '4rem' }}>
-              <Feed
-                user={user}
-                onCompose={() => setView('compose')}
-                onCampaign={(id) => { setActiveCampaignId(id); setView('campaign') }}
-                onProfile={() => { setViewingProfile(user.address); setView('profile') }}
-              />
-            </div>
-          </Page>
-        )}
+      {view === 'feed' && authenticated && user && (
+        <div className="pb-16">
+          <Feed
+            user={user}
+            onCompose={() => setView('compose')}
+            onCampaign={(id) => { setActiveCampaignId(id); setView('campaign') }}
+            onProfile={() => { setViewingProfile(user.address); setView('profile') }}
+          />
+        </div>
+      )}
 
-        {view === 'compose' && authenticated && user && (
-          <Page key="compose">
-            <div style={{ paddingBottom: '4rem' }}>
-              <Compose user={user} onBack={goFeed} onCreated={handleCampaignCreated} />
-            </div>
-          </Page>
-        )}
+      {view === 'compose' && authenticated && user && (
+        <div className="pb-16">
+          <Compose user={user} onBack={goFeed} onCreated={handleCampaignCreated} />
+        </div>
+      )}
 
-        {view === 'campaign' && activeCampaignId && authenticated && user && (
-          <Page key={`campaign-${activeCampaignId}`}>
-            <div style={{ paddingBottom: '4rem' }}>
-              <CampaignDetail
-                campaignId={activeCampaignId}
-                user={user}
-                onBack={goFeed}
-                onProfile={(addr) => { setViewingProfile(addr); setView('profile') }}
-              />
-            </div>
-          </Page>
-        )}
+      {view === 'campaign' && activeCampaignId && authenticated && user && (
+        <div className="pb-16">
+          <CampaignDetail
+            campaignId={activeCampaignId}
+            user={user}
+            onBack={goFeed}
+            onProfile={(addr) => { setViewingProfile(addr); setView('profile') }}
+          />
+        </div>
+      )}
 
-        {view === 'profile' && viewingProfile && authenticated && user && (
-          <Page key={`profile-${viewingProfile}`}>
-            <div style={{ paddingBottom: '4rem' }}>
-              <Profile
-                address={viewingProfile}
-                currentUser={user}
-                onBack={goFeed}
-                onCampaign={(id) => { setActiveCampaignId(id); setView('campaign') }}
-              />
-            </div>
-          </Page>
-        )}
+      {view === 'profile' && viewingProfile && authenticated && user && (
+        <div className="pb-16">
+          <Profile
+            address={viewingProfile}
+            currentUser={user}
+            onBack={goFeed}
+            onCampaign={(id) => { setActiveCampaignId(id); setView('campaign') }}
+          />
+        </div>
+      )}
 
-        {view === 'docs' && (
-          <Page key="docs">
-            <div style={{ paddingBottom: user ? '4rem' : 0 }}>
-              <Docs onBack={authenticated && user ? goFeed : goLanding} />
-            </div>
-          </Page>
-        )}
+      {view === 'docs' && (
+        <div className={user ? 'pb-16' : ''}>
+          <Docs onBack={authenticated && user ? goFeed : goLanding} />
+        </div>
+      )}
 
-        {view === 'agent-register' && authenticated && user && (
-          <Page key="agent-register">
-            <div style={{ paddingBottom: '4rem' }}>
-              <AgentRegister user={user} onBack={goFeed} onRegistered={handleAgentRegistered} />
-            </div>
-          </Page>
-        )}
-      </AnimatePresence>
+      {view === 'agent-register' && authenticated && user && (
+        <div className="pb-16">
+          <AgentRegister user={user} onBack={goFeed} onRegistered={handleAgentRegistered} />
+        </div>
+      )}
 
-      {renderNavBar()}
-    </>
+      {/* Bottom nav */}
+      {showNav && (
+        <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[rgba(0,255,65,0.1)] bg-[rgba(10,10,10,0.97)] backdrop-blur-sm">
+          <div className="max-w-2xl mx-auto flex items-center justify-around py-2 px-4">
+            {[
+              { label: 'feed',    icon: '◈', v: 'feed' },
+              { label: 'post',    icon: '+', v: 'compose' },
+              { label: 'docs',    icon: '//', v: 'docs' },
+              { label: 'agent',   icon: '◇', v: 'agent-register' },
+              { label: 'profile', icon: '@', v: 'profile', action: () => { setViewingProfile(user.address); setView('profile') } },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={item.action ?? (() => setView(item.v as AppState['view']))}
+                className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-all ${
+                  view === item.v || (item.v === 'feed' && view === 'campaign')
+                    ? 'text-[#00ff41]'
+                    : 'text-[rgba(232,255,232,0.3)] hover:text-[rgba(232,255,232,0.6)]'
+                }`}
+              >
+                <span className="text-sm leading-none font-mono">{item.icon}</span>
+                <span className="text-[0.45rem] uppercase tracking-widest font-mono">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
+    </div>
   )
 }
